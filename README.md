@@ -28,7 +28,10 @@ cd rust-esp32-std-demo/
 ```
 
 Build and flash:
+`cargo build`
 
-`cargo espflash --target <TARGET> <SERIAL>`
+`espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/rust-esp32-std-demo`
+
+
 
 
