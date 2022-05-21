@@ -1,3 +1,6 @@
+# Run Rust on the MCH2022 badge
+
+## Installing the toolchain 
 Install the Rust toolchain for ESP. 
 
 Example code for building and running Rust code on ESP32 with std. 
@@ -16,21 +19,25 @@ Don't forget to update the PATH and LIBCLAN_PATH variables as told at the end of
 
 Setup the default environment for esp `rustup default esp`.
 
-It should be possible to test the installation by running `test-rust-toolchain.sh` but it didn't work on my install. 
-
 Then download the example mention in the rust-build README.md and run the 'Cargo first approach'.
 
-
-Get example source code
+## Get example source code
 ```
 git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
 cd rust-esp32-std-demo/
 ```
 
-Build and flash:
+## Build and flash:
 `cargo build`
 
 `espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/rust-esp32-std-demo`
+
+# Creating Your own project
+
+Create a new Rust project with `cargo init` and change directory to the new project directory. \
+Set the default target with `rustup default esp` \
+Copy the sdkconfig*, build.rs, partitions.csv and Cargo.toml from this project to your own project. 
+Create a directory .cargo and copy the `.cargo/config.toml` from this project to your new .cargo directory. 
 
 
 
