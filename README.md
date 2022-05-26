@@ -7,6 +7,9 @@ There are two approaches regarding environment:
   - Gitpod: Requires a Gitpod account which can be created with a GitLab, GitHub or Bitbucket account.
   - GitHub Codespaces: Requires Codespaces beta.
 
+When using devcontainers, it supports [Wokwi](https://wokwi.com/) simulation:
+![Rusto onMCH2022](docs/Wokwi_simulation.png)
+
 It also contains [instructions and recommendations on how to start a new project](#creating-your-own-project).
 
 ## Installing the toolchains
