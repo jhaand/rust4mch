@@ -1,4 +1,11 @@
 # Rust on the MCH2022 badge
+This repo contains instructions and code to run Rust on the MCH2022 badge.
+There are two approachs regarding environment:
+- Install the tollchains in your host machine
+- Use devcontainers
+  - VsCode: Requires VsCode, Remote - Containers extension and Docker installed.
+  - Gitpod: Requires a Gitpod account which can be created with a GitLab, GitHub or Bitbucket account.
+  - GitHub Codespaces: Requires Codespaces beta.
 
 ## Installing the toolchains
 Install the Rust toolchain for ESP, see full [instructions here](https://github.com/esp-rs/rust-build#xtensa-installation)
@@ -40,7 +47,7 @@ of [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflas
  The repository supports:
  <!-- UPDATE GITPOD LINK IF MERGED -->
 -  [Gitpod](https://gitpod.io/): [![Open ESP32 in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/github.com/SergioGasquez/rust4mch)
--  [Vs Code Devcontainers](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-an-existing-folder-in-a-container)
+-  [Vs Code Devcontainers](https://code.visualstudio.com/docs/remote/containers#_installation)
 -  [GitHub Codespaces](https://docs.github.com/en/codespaces/developing-in-codespaces/creating-a-codespace)
 
 > **Warning**
