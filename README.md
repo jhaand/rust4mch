@@ -7,6 +7,20 @@ There are two approachs regarding environment:
   - Gitpod: Requires a Gitpod account which can be created with a GitLab, GitHub or Bitbucket account.
   - GitHub Codespaces: Requires Codespaces beta.
 
+
+## Table Of Contents
+- [Installing the toolchains](#installing-the-toolchains)
+  - [Build](#build)
+  - [Flash](#flash)
+- [Devcontainers](#devcontainers)
+  - [Build](#build-1)
+  - [Flash](#flash-1)
+  - [Wokwi Simulation](#wokwi-simulation)
+    - [Debugging with Wokwi](#debugging-with-wokwi)
+- [Creating Your own project](#creating-your-own-project)
+  - [Std](#std)
+  - [No-Std](#no-std)
+
 ## Installing the toolchains
 Install the Rust toolchain for ESP, see full [instructions here](https://github.com/esp-rs/rust-build#xtensa-installation)
 1. Install the prerequisites
@@ -136,14 +150,14 @@ Wokwi offers debugging with GDB.
     > [Wokwi Blog: List of common GDB commands for debugging.](https://blog.wokwi.com/gdb-avr-arduino-cheatsheet/?utm_source=urish&utm_medium=blog)
 
 
-# Creating Your own project
+## Creating Your own project
 
 Using [cargo-generate](https://github.com/cargo-generate/cargo-generate) is
 recomeneded. In order to install it:
  - Append it to the `--extra-crates`: `--extra-crates "cargo-espflash ldproxy cargo-generate"`
  - Install it: `cargo install cargo-generate`
 
-## Std
+### Std
 
 Use [esp-idf-template](https://github.com/esp-rs/esp-idf-template) as starting point:
 ```bash
@@ -152,7 +166,7 @@ cargo generate  https://github.com/esp-rs/esp-idf-template
 `cargo-generate` will as you a few questions, after those, you will have a "Hello, world!"
 Rust binary crate for the ESP-IDF framework.
 
-## No-Std
+### No-Std
 
 Use [esp-template](https://github.com/esp-rs/esp-template) as starting point:
 ```bash
