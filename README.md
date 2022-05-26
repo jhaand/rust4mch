@@ -1,12 +1,13 @@
 # Rust on the MCH2022 badge
 This repo contains instructions and code to run Rust on the MCH2022 badge.
-There are two approachs regarding environment:
-- Install the tollchains in your host machine
+There are two approaches regarding environment:
+- Install the toolchains in your host machine
 - Use devcontainers
   - VsCode: Requires VsCode, Remote - Containers extension and Docker installed.
   - Gitpod: Requires a Gitpod account which can be created with a GitLab, GitHub or Bitbucket account.
   - GitHub Codespaces: Requires Codespaces beta.
 
+It also contains instructions and recommendations on how to start a new project.
 
 ## Table Of Contents
 - [Installing the toolchains](#installing-the-toolchains)
