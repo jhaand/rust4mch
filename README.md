@@ -1,26 +1,13 @@
 # Rust on the MCH2022 badge
 This repo contains instructions and code to run Rust on the MCH2022 badge.
 There are two approaches regarding environment:
-- Install the toolchains in your host machine
-- Use devcontainers
+- [Install the toolchains in your host machine](#installing-the-toolchains)
+- [Use devcontainers](#devcontainers)
   - VsCode: Requires VsCode, Remote - Containers extension and Docker installed.
   - Gitpod: Requires a Gitpod account which can be created with a GitLab, GitHub or Bitbucket account.
   - GitHub Codespaces: Requires Codespaces beta.
 
-It also contains instructions and recommendations on how to start a new project.
-
-## Table Of Contents
-- [Installing the toolchains](#installing-the-toolchains)
-  - [Build](#build)
-  - [Flash](#flash)
-- [Devcontainers](#devcontainers)
-  - [Build](#build-1)
-  - [Flash](#flash-1)
-  - [Wokwi Simulation](#wokwi-simulation)
-    - [Debugging with Wokwi](#debugging-with-wokwi)
-- [Creating Your own project](#creating-your-own-project)
-  - [Std](#std)
-  - [No-Std](#no-std)
+It also contains [instructions and recommendations on how to start a new project](#creating-your-own-project).
 
 ## Installing the toolchains
 Install the Rust toolchain for ESP, see full [instructions here](https://github.com/esp-rs/rust-build#xtensa-installation)
