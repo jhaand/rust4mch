@@ -63,8 +63,14 @@ use embedded_graphics::pixelcolor::*;
 use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
 use embedded_graphics::text::*;
+use embedded_text::{
+    alignment::HorizontalAlignment,
+    style::{HeightMode, TextBoxStyleBuilder},
+    TextBox,
+};
 
-use ili9341;
+use ili9341::{self, Orientation};
+
 
 fn main() -> Result<()> {
     esp_idf_sys::link_patches();
@@ -75,8 +81,115 @@ fn main() -> Result<()> {
     test_fs()?;
     esp_idf_svc::log::EspLogger::initialize_default();
 
+    let peripherals = Peripherals::take().unwrap();
+    let pins = peripherals.pins;
+
+    let spi = peripherals.spi3;
+    let sclk = pins.gpio18;
+    let mosi = pins.gpio23;
+    let dc = pins.gpio33;
+    let rst = pins.gpio21;
+    let cs = pins.gpio32;
+
+    let backlight = pins.gpio5;
+    let miso = pins.gpio25;
+
+    let config = <spi::config::Config as Default>::default().baudrate((26_000_000).into());
+
+    //https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/spi_master.html
+    // If using real HW wrover-kit, please, use spi::Master::<spi::SPI2, _, _, _, _>::new instead of spi::Master::<spi::SPI3, _, _, _, _>::new
+    let di = SPIInterfaceNoCS::new(
+        spi::Master::<spi::SPI3, _, _, _, _>::new(
+            spi,
+            spi::Pins {
+                sclk,
+                sdo: mosi,
+                sdi: Some(miso),
+                cs: Some(cs),
+            },
+            config,
+        )?,
+        dc.into_output()?,
+    );
+
+    let reset = rst.into_output()?;
+    let backlight = backlight.into_output()?;
+
+    let mut display = ili9341::Ili9341::new(
+        di,
+        reset,
+        &mut delay::Ets,
+        Orientation::Landscape,
+        ili9341::DisplaySize240x320,
+    )
+    .map_err(|_| anyhow::anyhow!("Display"))?;
+
+    draw_text(
+        &mut display,
+        &"".to_string(),
+        &"Hello MCH2022 from Rust!".to_string(),
+    );
+
     Ok(())
 }
+
+
+#[allow(dead_code)]
+fn draw_text<D>(display: &mut D, text: &String, time: &String) -> Result<(), D::Error>
+where
+    D: DrawTarget + Dimensions,
+    D::Color: From<Rgb565>,
+{
+    //let rect = Rectangle::new(display.bounding_box().top_left, display.bounding_box().size);
+
+    display.clear(Rgb565::BLACK.into())?;
+    //display.fill_solid(&rect, Rgb565::GREEN.into());
+
+    Rectangle::new(Point::zero(), Size::new(300, 20)).into_styled(
+        TextBoxStyleBuilder::new()
+            .height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
+
+    Text::with_alignment(
+        &time,
+        Point::new(0, 15),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    Rectangle::new(Point::zero(), Size::new(300, 300)).into_styled(
+        TextBoxStyleBuilder::new()
+            //.height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
+
+    Text::with_alignment(
+        &text,
+        Point::new(0, 30),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    info!("Displaying done");
+
+    Ok(())
+}
+
 fn test_print() {
     // Start simple
     println!("Hello from Rust!");
@@ -92,7 +205,7 @@ fn test_print() {
 fn test_fs() -> Result<()> {
     assert_eq!(fs::canonicalize(PathBuf::from("."))?, PathBuf::from("/"));
     assert_eq!(
-        fs::canonicalize( 
+        fs::canonicalize(
             PathBuf::from("/")
             .join("foo")
             .join("bar")
