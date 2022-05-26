@@ -72,6 +72,10 @@ use embedded_text::{
 };
 
 use ili9341::{self, Orientation};
+<<<<<<< HEAD
+=======
+
+>>>>>>> beaa791 (Add devcontainer support and update readme)
 
 fn main() -> Result<()> {
     esp_idf_sys::link_patches();
@@ -82,6 +86,7 @@ fn main() -> Result<()> {
     test_fs()?;
     esp_idf_svc::log::EspLogger::initialize_default();
 
+<<<<<<< HEAD
     #[allow(unused)]
     let peripherals = Peripherals::take().unwrap();
     #[allow(unused)]
@@ -103,10 +108,41 @@ fn main() -> Result<()> {
         pins.gpio32,
     )?;
 
-    //test_tcp()?;
+                sdo: mosi,
+                sdi: Some(miso),
+                cs: Some(cs),
+            },
+            config,
+        )?,
+        dc.into_output()?,
+    );
+
+    let reset = rst.into_output()?;
+    let backlight = backlight.into_output()?;
+
+    let mut display = ili9341::Ili9341::new(
+        di,
+        reset,
+        &mut delay::Ets,
+        Orientation::Landscape,
+        ili9341::DisplaySize240x320,
+    )
+    .map_err(|_| anyhow::anyhow!("Display"))?;
+
+    draw_text(
+        &mut display,
+        &"".to_string(),
+        &"Hello MCH2022 from Rust!".to_string(),
+    );
+
+>>>>>>> 7e43c72 (Add devcontainer support and update readme)
     Ok(())
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> beaa791 (Add devcontainer support and update readme)
 #[allow(dead_code)]
 fn draw_text<D>(display: &mut D, text: &String, time: &String) -> Result<(), D::Error>
 where
@@ -124,7 +160,10 @@ where
             .alignment(HorizontalAlignment::Justified)
             .paragraph_spacing(3)
             .build(),
+<<<<<<< HEAD
     );
+=======
+>>>>>>> beaa791 (Add devcontainer support and update readme)
     //.draw(display)?;
 
     Text::with_alignment(
@@ -227,8 +266,12 @@ fn kaluga_hello_world(
     cs: gpio::Gpio32<gpio::Unknown>,
 ) -> Result<()> {
     info!(
+<<<<<<< HEAD
         "About to initialize the Kaluga {} SPI LED driver",
         "ILI9341"
+=======
+        "About to initialize the Kaluga {} SPI LED driver",  "ILI9341"
+>>>>>>> beaa791 (Add devcontainer support and update readme)
     );
 
     let config = <spi::config::Config as Default>::default().baudrate((40).MHz().into());
@@ -259,12 +302,16 @@ fn kaluga_hello_world(
     led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
 }
 
+<<<<<<< HEAD
 fn led_draw<D>(display: &mut D) -> Result<(), D::Error>
 where
     D: DrawTarget + Dimensions,
     D::Color: From<Rgb565>,
 {
     display.clear(Rgb565::BLACK.into())?;
+=======
+
+>>>>>>> beaa791 (Add devcontainer support and update readme)
 
     info!("LED rendering done.");
     Ok(())
