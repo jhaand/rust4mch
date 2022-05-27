@@ -17,7 +17,7 @@ Clone the repository and run: `install-rust-toolchain.sh`
 
 Don't forget to update the PATH and LIBCLAN_PATH variables as told at the end of the installation.
 
-Setup the default environment for esp `rustup default esp`.
+Setup the default environment for esp in this directory `rustup override seZZ esp`.
 
 Then download the example mention in the rust-build README.md and run the 'Cargo first approach'.
 
