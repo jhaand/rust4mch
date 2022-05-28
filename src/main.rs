@@ -66,6 +66,24 @@ use embedded_graphics::primitives::*;
 use embedded_graphics::text::*;
 
 use ili9341;
+use st7789;
+
+use epd_waveshare::{epd4in2::*, graphics::VarDisplay, prelude::*};
+
+#[allow(dead_code)]
+const SSID: &str = env!("RUST_ESP32_STD_DEMO_WIFI_SSID");
+#[allow(dead_code)]
+const PASS: &str = env!("RUST_ESP32_STD_DEMO_WIFI_PASS");
+
+#[cfg(esp32s2)]
+include!(env!("EMBUILD_GENERATED_SYMBOLS_FILE"));
+
+#[cfg(esp32s2)]
+const ULP: &[u8] = include_bytes!(env!("EMBUILD_GENERATED_BIN_FILE"));
+
+thread_local! {
+    static TLS: RefCell<u32> = RefCell::new(13);
+}
 
 fn main() -> Result<()> {
     esp_idf_sys::link_patches();
@@ -76,6 +94,28 @@ fn main() -> Result<()> {
     test_fs()?;
     esp_idf_svc::log::EspLogger::initialize_default();
 
+    #[allow(unused)]
+    let peripherals = Peripherals::take().unwrap();
+    #[allow(unused)]
+    let pins = peripherals.pins;
+
+    #[allow(unused)]
+    let netif_stack = Arc::new(EspNetifStack::new()?);
+    #[allow(unused)]
+    let sys_loop_stack = Arc::new(EspSysLoopStack::new()?);
+    #[allow(unused)]
+        let default_nvs = Arc::new(EspDefaultNvs::new()?);
+
+    kaluga_hello_world(
+        pins.gpio33,
+        pins.gpio25,
+        peripherals.spi3,
+        pins.gpio18,
+        pins.gpio23,
+        pins.gpio32,
+    )?;
+
+    //test_tcp()?;
     Ok(())
 }
 fn test_print() {
@@ -93,15 +133,15 @@ fn test_print() {
 fn test_fs() -> Result<()> {
     assert_eq!(fs::canonicalize(PathBuf::from("."))?, PathBuf::from("/"));
     assert_eq!(
-        fs::canonicalize( 
+        fs::canonicalize(
             PathBuf::from("/")
-            .join("foo")
-            .join("bar")
-            .join(".")
-            .join("..")
-            .join("baz")
-            )?,
-            PathBuf::from("/foo/baz")
+                .join("foo")
+                .join("bar")
+                .join(".")
+                .join("..")
+                .join("baz")
+        )?,
+        PathBuf::from("/foo/baz")
     );
 
     Ok(())
@@ -133,27 +173,20 @@ fn test_tcp() -> Result<()> {
     Ok(())
 }
 
-#[cfg(feature = "kaluga")]
 fn kaluga_hello_world(
-    backlight: gpio::Gpio6<gpio::Unknown>,
-    dc: gpio::Gpio13<gpio::Unknown>,
-    rst: gpio::Gpio16<gpio::Unknown>,
+    dc: gpio::Gpio33<gpio::Unknown>,
+    rst: gpio::Gpio25<gpio::Unknown>,
     spi: spi::SPI3,
-    sclk: gpio::Gpio15<gpio::Unknown>,
-    sdo: gpio::Gpio9<gpio::Unknown>,
-    cs: gpio::Gpio11<gpio::Unknown>,
-    ili9341: bool,
+    sclk: gpio::Gpio18<gpio::Unknown>,
+    sdo: gpio::Gpio23<gpio::Unknown>,
+    cs: gpio::Gpio32<gpio::Unknown>,
 ) -> Result<()> {
     info!(
-        "About to initialize the Kaluga {} SPI LED driver",
-        if ili9341 { "ILI9341" } else { "ST7789" }
+        "About to initialize the Kaluga {} SPI LED driver",  "ILI9341" 
     );
 
     let config = <spi::config::Config as Default>::default()
-        .baudrate((if ili9341 { 40 } else { 80 }).MHz().into());
-
-    let mut backlight = backlight.into_output()?;
-    backlight.set_high()?;
+        .baudrate((40).MHz().into());
 
     let di = SPIInterfaceNoCS::new(
         spi::Master::<spi::SPI3, _, _, _, _>::new(
@@ -171,27 +204,49 @@ fn kaluga_hello_world(
 
     let reset = rst.into_output()?;
 
-    if ili9341 {
         let mut display = ili9341::Ili9341::new(
             di,
             reset,
             &mut delay::Ets,
             KalugaOrientation::Landscape,
             ili9341::DisplaySize240x320,
-        )?;
+        );
+    led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
+}
+    
 
-        led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
-    } else {
-        let mut display = st7789::ST7789::new(di, reset, 320, 240);
+fn led_draw<D>(display: &mut D) -> Result<(), D::Error>
+where
+    D: DrawTarget + Dimensions,
+    D::Color: From<Rgb565>,
+{
+    display.clear(Rgb565::BLACK.into())?;
 
-        display
-            .init(&mut delay::Ets)
-            .map_err(|e| anyhow::anyhow!("Display error: {:?}", e))?;
-        display
-            .set_orientation(st7789::Orientation::Landscape)
-            .map_err(|e| anyhow::anyhow!("Display error: {:?}", e))?;
-
-        led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
-    }
+    info!("LED rendering done.");
+    Ok(())
 }
 
+
+// Kaluga needs customized screen orientation commands
+// (not a surprise; quite a few ILI9341 boards need these as evidenced in the TFT_eSPI & lvgl ESP32 C drivers)
+pub enum KalugaOrientation {
+    Portrait,
+    PortraitFlipped,
+    Landscape,
+    LandscapeFlipped,
+}
+
+impl ili9341::Mode for KalugaOrientation {
+    fn mode(&self) -> u8 {
+        match self {
+            Self::Portrait => 0,
+            Self::Landscape => 0x20 | 0x40,
+            Self::PortraitFlipped => 0x80 | 0x40,
+            Self::LandscapeFlipped => 0x80 | 0x20,
+        }
+    }
+
+    fn is_landscape(&self) -> bool {
+        matches!(self, Self::Landscape | Self::LandscapeFlipped)
+    }
+}

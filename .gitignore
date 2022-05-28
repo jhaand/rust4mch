@@ -1,3 +1,4 @@
 target
 .embuild/**
 Cargo.lock
+set_wifi.sh
