@@ -1,6 +1,7 @@
 #![allow(unused_imports)]
 #![allow(clippy::single_component_path_imports)]
 
+mod wifi_creds;
 use std::fs;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
@@ -71,9 +72,9 @@ use st7789;
 use epd_waveshare::{epd4in2::*, graphics::VarDisplay, prelude::*};
 
 #[allow(dead_code)]
-const SSID: &str = env!("RUST_ESP32_STD_DEMO_WIFI_SSID");
+const SSID: &str = wifi_creds::SSID;
 #[allow(dead_code)]
-const PASS: &str = env!("RUST_ESP32_STD_DEMO_WIFI_PASS");
+const PASS: &str = wifi_creds::PASS;
 
 #[cfg(esp32s2)]
 include!(env!("EMBUILD_GENERATED_SYMBOLS_FILE"));
@@ -211,20 +212,10 @@ fn kaluga_hello_world(
             KalugaOrientation::Landscape,
             ili9341::DisplaySize240x320,
         );
-    led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
+        Ok(())
 }
+
     
-
-fn led_draw<D>(display: &mut D) -> Result<(), D::Error>
-where
-    D: DrawTarget + Dimensions,
-    D::Color: From<Rgb565>,
-{
-    display.clear(Rgb565::BLACK.into())?;
-
-    info!("LED rendering done.");
-    Ok(())
-}
 
 
 // Kaluga needs customized screen orientation commands
