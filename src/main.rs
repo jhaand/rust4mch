@@ -1,6 +1,7 @@
 #![allow(unused_imports)]
 #![allow(clippy::single_component_path_imports)]
 
+mod wifi_creds;
 use std::fs;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
