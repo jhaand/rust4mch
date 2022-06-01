@@ -65,6 +65,11 @@ use embedded_graphics::pixelcolor::*;
 use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
 use embedded_graphics::text::*;
+use embedded_text::{
+    alignment::HorizontalAlignment,
+    style::{HeightMode, TextBoxStyleBuilder},
+    TextBox,
+};
 
 use ili9341;
 use st7789;
@@ -105,7 +110,7 @@ fn main() -> Result<()> {
     #[allow(unused)]
     let sys_loop_stack = Arc::new(EspSysLoopStack::new()?);
     #[allow(unused)]
-        let default_nvs = Arc::new(EspDefaultNvs::new()?);
+    let default_nvs = Arc::new(EspDefaultNvs::new()?);
 
     kaluga_hello_world(
         pins.gpio33,
@@ -183,11 +188,11 @@ fn kaluga_hello_world(
     cs: gpio::Gpio32<gpio::Unknown>,
 ) -> Result<()> {
     info!(
-        "About to initialize the Kaluga {} SPI LED driver",  "ILI9341" 
+        "About to initialize the Kaluga {} SPI LED driver",
+        "ILI9341"
     );
 
-    let config = <spi::config::Config as Default>::default()
-        .baudrate((40).MHz().into());
+    let config = <spi::config::Config as Default>::default().baudrate((40).MHz().into());
 
     let di = SPIInterfaceNoCS::new(
         spi::Master::<spi::SPI3, _, _, _, _>::new(
@@ -205,17 +210,78 @@ fn kaluga_hello_world(
 
     let reset = rst.into_output()?;
 
-        let mut display = ili9341::Ili9341::new(
-            di,
-            reset,
-            &mut delay::Ets,
-            KalugaOrientation::Landscape,
-            ili9341::DisplaySize240x320,
-        );
-        Ok(())
+    let mut display = ili9341::Ili9341::new(
+        di,
+        reset,
+        &mut delay::Ets,
+        KalugaOrientation::LandscapeVericallyFlipped,
+        ili9341::DisplaySize240x320,
+    )
+    .map_err(|_| anyhow::anyhow!("Display"))?;
+
+    draw_text(
+        &mut display,
+        &"".to_string(),
+        &"Hello MCH2022 from Rust!".to_string(),
+    );
+    Ok(())
 }
 
-    
+#[allow(dead_code)]
+fn draw_text<D>(display: &mut D, text: &String, time: &String) -> Result<(), D::Error>
+where
+    D: DrawTarget + Dimensions,
+    D::Color: From<Rgb565>,
+{
+    //let rect = Rectangle::new(display.bounding_box().top_left, display.bounding_box().size);
+
+    display.clear(Rgb565::BLACK.into())?;
+    //display.fill_solid(&rect, Rgb565::GREEN.into());
+
+    Rectangle::new(Point::zero(), Size::new(300, 20)).into_styled(
+        TextBoxStyleBuilder::new()
+            .height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
+
+    Text::with_alignment(
+        &time,
+        Point::new(0, 15),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    Rectangle::new(Point::zero(), Size::new(300, 300)).into_styled(
+        TextBoxStyleBuilder::new()
+            //.height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
+
+    Text::with_alignment(
+        &text,
+        Point::new(0, 30),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    info!("Displaying done");
+
+    Ok(())
+}
 
 
 // Kaluga needs customized screen orientation commands
@@ -225,12 +291,14 @@ pub enum KalugaOrientation {
     PortraitFlipped,
     Landscape,
     LandscapeFlipped,
+    LandscapeVericallyFlipped,
 }
 
 impl ili9341::Mode for KalugaOrientation {
     fn mode(&self) -> u8 {
         match self {
             Self::Portrait => 0,
+            Self::LandscapeVericallyFlipped => 0x20,
             Self::Landscape => 0x20 | 0x40,
             Self::PortraitFlipped => 0x80 | 0x40,
             Self::LandscapeFlipped => 0x80 | 0x20,
