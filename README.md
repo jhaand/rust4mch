@@ -31,7 +31,25 @@ Install the Rust toolchain for ESP, see full [instructions here](https://github.
         ```
 4. Update the environment variables as told at the end of the installation script.
 
+<<<<<<< HEAD
 ### Build
+=======
+Find the code on: 
+https://github.com/skerkour/kerkour.com/tree/main/2021/rust_on_esp32
+
+Installing the esp-rs Rust toolchain now goes via: 
+https://github.com/esp-rs/rust-build
+
+Clone the repository and run: `install-rust-toolchain.sh`
+
+Don't forget to update the PATH and LIBCLAN_PATH variables as told at the end of the installation.
+
+Setup the default environment for esp in this directory `rustup override seZZ esp`.
+
+Then download the example mention in the rust-build README.md and run the 'Cargo first approach'.
+
+## Get example source code
+>>>>>>> 625b111 (Latest fixes)
 ```
 cargo build
 ```

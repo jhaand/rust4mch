@@ -17,6 +17,7 @@ use url;
 
 use smol;
 
+use embedded_hal::adc::OneShot;
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::digital::v2::OutputPin;
 
@@ -243,5 +244,67 @@ fn test_tcp() -> Result<()> {
         std::str::from_utf8(&result)?);
 
     Ok(())
+}
+
+#[cfg(feature = "kaluga")]
+fn kaluga_hello_world(
+    backlight: gpio::Gpio6<gpio::Unknown>,
+    dc: gpio::Gpio13<gpio::Unknown>,
+    rst: gpio::Gpio16<gpio::Unknown>,
+    spi: spi::SPI3,
+    sclk: gpio::Gpio15<gpio::Unknown>,
+    sdo: gpio::Gpio9<gpio::Unknown>,
+    cs: gpio::Gpio11<gpio::Unknown>,
+    ili9341: bool,
+) -> Result<()> {
+    info!(
+        "About to initialize the Kaluga {} SPI LED driver",
+        if ili9341 { "ILI9341" } else { "ST7789" }
+    );
+
+    let config = <spi::config::Config as Default>::default()
+        .baudrate((if ili9341 { 40 } else { 80 }).MHz().into());
+
+    let mut backlight = backlight.into_output()?;
+    backlight.set_high()?;
+
+    let di = SPIInterfaceNoCS::new(
+        spi::Master::<spi::SPI3, _, _, _, _>::new(
+            spi,
+            spi::Pins {
+                sclk,
+                sdo,
+                sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
+                cs: Some(cs),
+            },
+            config,
+        )?,
+        dc.into_output()?,
+    );
+
+    let reset = rst.into_output()?;
+
+    if ili9341 {
+        let mut display = ili9341::Ili9341::new(
+            di,
+            reset,
+            &mut delay::Ets,
+            KalugaOrientation::Landscape,
+            ili9341::DisplaySize240x320,
+        )?;
+
+        led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
+    } else {
+        let mut display = st7789::ST7789::new(di, reset, 320, 240);
+
+        display
+            .init(&mut delay::Ets)
+            .map_err(|e| anyhow::anyhow!("Display error: {:?}", e))?;
+        display
+            .set_orientation(st7789::Orientation::Landscape)
+            .map_err(|e| anyhow::anyhow!("Display error: {:?}", e))?;
+
+        led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
+    }
 }
 
