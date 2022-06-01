@@ -71,11 +71,25 @@ use embedded_text::{
     TextBox,
 };
 
-use ili9341::{self, Orientation};
-<<<<<<< HEAD
-=======
+use ili9341;
+use st7789;
 
->>>>>>> beaa791 (Add devcontainer support and update readme)
+use epd_waveshare::{epd4in2::*, graphics::VarDisplay, prelude::*};
+
+#[allow(dead_code)]
+const SSID: &str = wifi_creds::SSID;
+#[allow(dead_code)]
+const PASS: &str = wifi_creds::PASS;
+
+#[cfg(esp32s2)]
+include!(env!("EMBUILD_GENERATED_SYMBOLS_FILE"));
+
+#[cfg(esp32s2)]
+const ULP: &[u8] = include_bytes!(env!("EMBUILD_GENERATED_BIN_FILE"));
+
+thread_local! {
+    static TLS: RefCell<u32> = RefCell::new(13);
+}
 
 fn main() -> Result<()> {
     esp_idf_sys::link_patches();
@@ -86,7 +100,6 @@ fn main() -> Result<()> {
     test_fs()?;
     esp_idf_svc::log::EspLogger::initialize_default();
 
-<<<<<<< HEAD
     #[allow(unused)]
     let peripherals = Peripherals::take().unwrap();
     #[allow(unused)]
@@ -108,100 +121,9 @@ fn main() -> Result<()> {
         pins.gpio32,
     )?;
 
-                sdo: mosi,
-                sdi: Some(miso),
-                cs: Some(cs),
-            },
-            config,
-        )?,
-        dc.into_output()?,
-    );
-
-    let reset = rst.into_output()?;
-    let backlight = backlight.into_output()?;
-
-    let mut display = ili9341::Ili9341::new(
-        di,
-        reset,
-        &mut delay::Ets,
-        Orientation::Landscape,
-        ili9341::DisplaySize240x320,
-    )
-    .map_err(|_| anyhow::anyhow!("Display"))?;
-
-    draw_text(
-        &mut display,
-        &"".to_string(),
-        &"Hello MCH2022 from Rust!".to_string(),
-    );
-
->>>>>>> 7e43c72 (Add devcontainer support and update readme)
+    //test_tcp()?;
     Ok(())
 }
-
-<<<<<<< HEAD
-=======
-
->>>>>>> beaa791 (Add devcontainer support and update readme)
-#[allow(dead_code)]
-fn draw_text<D>(display: &mut D, text: &String, time: &String) -> Result<(), D::Error>
-where
-    D: DrawTarget + Dimensions,
-    D::Color: From<Rgb565>,
-{
-    //let rect = Rectangle::new(display.bounding_box().top_left, display.bounding_box().size);
-
-    display.clear(Rgb565::BLACK.into())?;
-    //display.fill_solid(&rect, Rgb565::GREEN.into());
-
-    Rectangle::new(Point::zero(), Size::new(300, 20)).into_styled(
-        TextBoxStyleBuilder::new()
-            .height_mode(HeightMode::FitToText)
-            .alignment(HorizontalAlignment::Justified)
-            .paragraph_spacing(3)
-            .build(),
-<<<<<<< HEAD
-    );
-=======
->>>>>>> beaa791 (Add devcontainer support and update readme)
-    //.draw(display)?;
-
-    Text::with_alignment(
-        &time,
-        Point::new(0, 15),
-        MonoTextStyle::new(
-            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
-            Rgb565::WHITE.into(),
-        ),
-        Alignment::Left,
-    )
-    .draw(display)?;
-
-    Rectangle::new(Point::zero(), Size::new(300, 300)).into_styled(
-        TextBoxStyleBuilder::new()
-            //.height_mode(HeightMode::FitToText)
-            .alignment(HorizontalAlignment::Justified)
-            .paragraph_spacing(3)
-            .build(),
-    );
-    //.draw(display)?;
-
-    Text::with_alignment(
-        &text,
-        Point::new(0, 30),
-        MonoTextStyle::new(
-            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
-            Rgb565::WHITE.into(),
-        ),
-        Alignment::Left,
-    )
-    .draw(display)?;
-
-    info!("Displaying done");
-
-    Ok(())
-}
-
 fn test_print() {
     // Start simple
     println!("Hello from Rust!");
@@ -266,12 +188,8 @@ fn kaluga_hello_world(
     cs: gpio::Gpio32<gpio::Unknown>,
 ) -> Result<()> {
     info!(
-<<<<<<< HEAD
         "About to initialize the Kaluga {} SPI LED driver",
         "ILI9341"
-=======
-        "About to initialize the Kaluga {} SPI LED driver",  "ILI9341"
->>>>>>> beaa791 (Add devcontainer support and update readme)
     );
 
     let config = <spi::config::Config as Default>::default().baudrate((40).MHz().into());
@@ -296,26 +214,75 @@ fn kaluga_hello_world(
         di,
         reset,
         &mut delay::Ets,
-        KalugaOrientation::Landscape,
+        KalugaOrientation::LandscapeVericallyFlipped,
         ili9341::DisplaySize240x320,
+    )
+    .map_err(|_| anyhow::anyhow!("Display"))?;
+
+    draw_text(
+        &mut display,
+        &"".to_string(),
+        &"Hello MCH2022 from Rust!".to_string(),
     );
-    led_draw(&mut display).map_err(|e| anyhow::anyhow!("Display error: {:?}", e))
+    Ok(())
 }
 
-<<<<<<< HEAD
-fn led_draw<D>(display: &mut D) -> Result<(), D::Error>
+#[allow(dead_code)]
+fn draw_text<D>(display: &mut D, text: &String, time: &String) -> Result<(), D::Error>
 where
     D: DrawTarget + Dimensions,
     D::Color: From<Rgb565>,
 {
+    //let rect = Rectangle::new(display.bounding_box().top_left, display.bounding_box().size);
+
     display.clear(Rgb565::BLACK.into())?;
-=======
+    //display.fill_solid(&rect, Rgb565::GREEN.into());
 
->>>>>>> beaa791 (Add devcontainer support and update readme)
+    Rectangle::new(Point::zero(), Size::new(300, 20)).into_styled(
+        TextBoxStyleBuilder::new()
+            .height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
 
-    info!("LED rendering done.");
+    Text::with_alignment(
+        &time,
+        Point::new(0, 15),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    Rectangle::new(Point::zero(), Size::new(300, 300)).into_styled(
+        TextBoxStyleBuilder::new()
+            //.height_mode(HeightMode::FitToText)
+            .alignment(HorizontalAlignment::Justified)
+            .paragraph_spacing(3)
+            .build(),
+    );
+    //.draw(display)?;
+
+    Text::with_alignment(
+        &text,
+        Point::new(0, 30),
+        MonoTextStyle::new(
+            &embedded_graphics::mono_font::iso_8859_2::FONT_10X20,
+            Rgb565::WHITE.into(),
+        ),
+        Alignment::Left,
+    )
+    .draw(display)?;
+
+    info!("Displaying done");
+
     Ok(())
 }
+
 
 // Kaluga needs customized screen orientation commands
 // (not a surprise; quite a few ILI9341 boards need these as evidenced in the TFT_eSPI & lvgl ESP32 C drivers)
@@ -324,12 +291,14 @@ pub enum KalugaOrientation {
     PortraitFlipped,
     Landscape,
     LandscapeFlipped,
+    LandscapeVericallyFlipped,
 }
 
 impl ili9341::Mode for KalugaOrientation {
     fn mode(&self) -> u8 {
         match self {
             Self::Portrait => 0,
+            Self::LandscapeVericallyFlipped => 0x20,
             Self::Landscape => 0x20 | 0x40,
             Self::PortraitFlipped => 0x80 | 0x40,
             Self::LandscapeFlipped => 0x80 | 0x20,
