@@ -1,6 +1,6 @@
 {
   "name": "rust4mch",
-  //"image": "docker.io/sergiogasquez/esp-rs-env:espidf_v4.4",
+  //"image": "docker.io/espressif/idf-rust:esp32_v4.4_1.61.0.0",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
