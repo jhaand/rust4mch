@@ -57,12 +57,20 @@ of [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflas
 -  [Vs Code Devcontainers](https://code.visualstudio.com/docs/remote/containers#_installation)
 -  [GitHub Codespaces](https://docs.github.com/en/codespaces/developing-in-codespaces/creating-a-codespace)
 
+
+> **Note**
+>
+> When using VS Code Dev Containers or GitHub Codespaces, we can pull the image
+> from Dockerhub instead of builing it from the Dockerfile. In order to do so,
+> please, uncomment the `image` property of `.devcontainer/devcontainer.json`
+> and comment the `build` property.
+
 > **Warning**
 >
 > When using GitHub Codespaces, we need to make the ports
 > public, [see instructions](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace#sharing-a-port), in order to flash and run
 > Wokwi simulations.
->
+
 ### Build
 -  UI approach:
     - From UI: Press `Build` on the left side of the Status Bar.
