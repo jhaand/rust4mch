@@ -33,11 +33,11 @@ Install the Rust toolchain for ESP, see full [instructions here](https://github.
 ## Configure Wifi
 Copy the file './src/wifi_creds_example.rs' to './src/wifi_creds.rs'
 Set the Wifi credentials in the file './src/wifi_creds.rs' to the proper SSID and password.
-### Build
+## Build
 ```
 cargo build
 ```
-### Flash
+## Flash
 We are setting `cargo espflash --monitor` as custom runner in `.cargo/config.toml`, so we can use:
 ```
 cargo run [OPTIONS] [SERIAL] [SUBCOMMAND]
