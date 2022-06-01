@@ -176,4 +176,3 @@ minimalist project!
 git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
 cd rust-esp32-std-demo/
 ```
-
