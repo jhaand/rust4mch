@@ -52,8 +52,7 @@ of [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflas
 
 ## Devcontainers
  The repository supports:
- <!-- UPDATE GITPOD LINK IF MERGED -->
--  [Gitpod](https://gitpod.io/): [![Open ESP32 in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/github.com/SergioGasquez/rust4mch)
+-  [Gitpod](https://gitpod.io/): [![Open ESP32 in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/github.com/jhaand/rust4mch)
 -  [Vs Code Devcontainers](https://code.visualstudio.com/docs/remote/containers#_installation)
 -  [GitHub Codespaces](https://docs.github.com/en/codespaces/developing-in-codespaces/creating-a-codespace)
 
@@ -150,6 +149,7 @@ Wokwi offers debugging with GDB.
 
     > [Wokwi Blog: List of common GDB commands for debugging.](https://blog.wokwi.com/gdb-avr-arduino-cheatsheet/?utm_source=urish&utm_medium=blog)
 
+# Inspiration
 
 ## Creating Your own project
 
@@ -177,9 +177,8 @@ cargo generate  https://github.com/esp-rs/esp-template
 minimalist project!
 
 
-# Inspiration
+## Rust on ESP32 STD Demo App
 
-## Get example source code
 ```
 git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
 cd rust-esp32-std-demo/
