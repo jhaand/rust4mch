@@ -283,7 +283,6 @@ where
     Ok(())
 }
 
-
 // Kaluga needs customized screen orientation commands
 // (not a surprise; quite a few ILI9341 boards need these as evidenced in the TFT_eSPI & lvgl ESP32 C drivers)
 pub enum KalugaOrientation {

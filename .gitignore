@@ -2,3 +2,4 @@ target
 .embuild/**
 Cargo.lock
 src/wifi_creds.rs
+**/*.bk
