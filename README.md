@@ -92,7 +92,18 @@ of [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflas
     - From the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (`Ctrl-Shift-P` or `Cmd-Shift-P`) run the `Tasks: Run Task` command and
     select `Build & Flash`.
 - Terminal approach:
-  - Using `flash.sh` script:
+  - Manual approach :
+    ```
+    cargo build --release
+    cd target/xtensa-esp32-espidf/release/
+    ```
+    (After each cargo build) Convert the elf image to binary: 
+    ```
+    esptool.py --chip esp32 elf2image rus4mch
+    ```
+    Mount an uSD card and copy the .bin file to the card. Install via the `development tools -> File browser (SD card)`
+    Run via the installed apps. 
+  - Using `flash.sh` script: (Not supported at this moment)
 
     ```
     ./flash.sh [debug | release]
@@ -176,8 +187,23 @@ cargo generate  https://github.com/esp-rs/esp-template
 `cargo-generate` will as you a few questions, after those, you will have a bare-metal
 minimalist project!
 
+## Hello world example 
+
+This project added a minimal hello world example in the `examples` directory. 
+You can run it as follows:
+```
+cargo build --example hello_world
+cd target/xtensa-esp32-espidf/debug/examples/
+esptool.py --chip esp32 elf2image hello_world
+../../../../tools/webusb_push.py hello_world hello_world.bin
+```
+Reset the badge. Connect a serial program to /dev/ttyACM0 at 115k2 baud. 
+After that you can navigate to the apps and run the app. 
 
 ## Rust on ESP32 STD Demo App
+The best example on useing std Rust on the ESP32 can be found here. It uses a lot of peripheral and protocols. 
+
+https://github.com/ivmarkov/rust-esp32-std-demo.git
 
 ```
 git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
