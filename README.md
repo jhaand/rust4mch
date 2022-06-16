@@ -92,7 +92,18 @@ of [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflas
     - From the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (`Ctrl-Shift-P` or `Cmd-Shift-P`) run the `Tasks: Run Task` command and
     select `Build & Flash`.
 - Terminal approach:
-  - Using `flash.sh` script:
+  - Manual approach :
+    ```
+    cargo build --release
+    cd target/xtensa-esp32-espidf/release/
+    ```
+    (After each cargo build) Convert the elf image to binary: 
+    ```
+    esptool.py --chip esp32 elf2image rus4mch
+    ```
+    Mount an uSD card and copy the .bin file to the card. Install via the `development tools -> File browser (SD card)`
+    Run via the installed apps. 
+  - Using `flash.sh` script: (Not supported at this moment)
 
     ```
     ./flash.sh [debug | release]
