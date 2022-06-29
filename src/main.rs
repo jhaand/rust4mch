@@ -105,6 +105,10 @@ fn main() -> Result<()> {
     #[allow(unused)]
     let pins = peripherals.pins;
 
+    let mut display_control = pins.gpio26.into_output().unwrap();
+    display_control.set_low();
+
+
     #[allow(unused)]
     let netif_stack = Arc::new(EspNetifStack::new()?);
     #[allow(unused)]
@@ -124,6 +128,7 @@ fn main() -> Result<()> {
     //test_tcp()?;
     Ok(())
 }
+
 fn test_print() {
     // Start simple
     println!("Hello from Rust!");
