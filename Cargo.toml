@@ -4,17 +4,8 @@ version = "0.1.0"
 edition = "2021"
 authors = ["jhaand"]
 license = "GPL v3"
-keywords = ["embedded", "svc", "idf", "esp-idf", "esp32"]
+keywords = ["embedded", "idf", "esp-idf", "esp32"]
 readme = "README.md"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[patch.crates-io]
-smol = { git = "https://github.com/esp-rs-compat/smol" }
-polling = { git = "https://github.com/esp-rs-compat/polling" }
-socket2 = { git = "https://github.com/esp-rs-compat/socket2" }
-getrandom = { version = "0.2", git = "https://github.com/esp-rs-compat/getrandom.git" }
-#getrandom1 = { version = "0.1", git = "https://github.com/esp-rs-compat/getrandom.git", package = "getrandom", branch = "0.1" }
 
 [profile.release]
 opt-level = "s"
@@ -24,58 +15,23 @@ debug = true # Symbols are nice and they don't increase the size on Flash
 opt-level = "z"
 
 [features]
-default = ["experimental"]
-
 # Enable this feature for the build to use the PlatformIO tooling instead of the native ESP-IDF tooling under the hood
 pio = ["esp-idf-sys/pio"]
 
-# Enable this feature if you are building for QEMU
-qemu = []
-
-# Enable this feature in case you have a Kaluga board and would like to see a LED screen demo
-kaluga = []
-
-# Enable this feature in case you have a TTGO board and would like to see a LED screen demo
-ttgo = []
-
-# Enable this feature in case you have an ESP32S3-USB-OTG board and would like to see a LED screen demo
-heltec = []
-
-# Enable this feature in case you have a generic SSD1306 Display connected via SPI to pins 3, 4, 5, 16, 18, 23 (SPI3) of your board
-ssd1306g_spi = []
-
-# Enable this feature in case you have a generic SSD1306 screen connected to pins 14, 22 and 21 of your board
-ssd1306g = []
-
-esp32s3_usb_otg = []
-
-# Enable this feature in case you have an RMII IP101 Ethernet adapter
-ip101 = []
-
-# Enable this feature in case you have an SPI W5500 Ethernet adapter
-w5500 = []
-
-# Enable this feature in case you have a Waveshare board and 4.2" e-paper
-waveshare_epd = []
-
-experimental = ["esp-idf-svc/experimental", "esp-idf-hal/experimental", "embedded-svc/experimental"]
-
 [dependencies]
 anyhow = {version = "1", features = ["backtrace"]}
-log = "0.4"
 url = "2"
-esp-idf-sys = { version = "0.31", features = ["binstart"] }
-esp-idf-svc = "0.41"
-esp-idf-hal = "0.37"
-embedded-svc = "0.21"
+esp-idf-sys = { version = "0.31.6", features = ["binstart"] }
+esp-idf-svc = "0.42.1"
+esp-idf-hal = "0.38"
+#embedded-svc = "0.22.1"
 embedded-hal = "0.2"
 embedded-graphics = "0.7"
 embedded-text = "0.5.0"
 display-interface = "0.4"
 display-interface-spi = "0.4"
-st7789 = "0.6"
 ili9341 = { version = "0.5", git = "https://github.com/yuri91/ili9341-rs" }
-epd-waveshare = "0.5.0"
+log = "0.4"
 smol = "1.2"
 
 [build-dependencies]
