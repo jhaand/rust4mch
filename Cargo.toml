@@ -19,20 +19,19 @@ opt-level = "z"
 pio = ["esp-idf-sys/pio"]
 
 [dependencies]
-anyhow = {version = "1", features = ["backtrace"]}
-url = "2"
 esp-idf-sys = { version = "0.31.6", features = ["binstart"] }
-esp-idf-svc = "0.42.1"
-esp-idf-hal = "0.38"
-#embedded-svc = "0.22.1"
-embedded-hal = "0.2"
-embedded-graphics = "0.7"
-embedded-text = "0.5.0"
-display-interface = "0.4"
-display-interface-spi = "0.4"
-ili9341 = { version = "0.5", git = "https://github.com/yuri91/ili9341-rs" }
-log = "0.4"
-smol = "1.2"
+#anyhow = {version = "1", features = ["backtrace"]}
+#url = "2"
+#esp-idf-svc = "0.42.1"
+#esp-idf-hal = "0.38"
+##embedded-svc = "0.22.1"
+#embedded-hal = "0.2"
+#embedded-graphics = "0.7"
+#embedded-text = "0.5.0"
+#display-interface = "0.4"
+#display-interface-spi = "0.4"
+#ili9341 = { version = "0.5", git = "https://github.com/yuri91/ili9341-rs" }
+#log = "0.4"
 
 [build-dependencies]
 embuild = "0.29"
