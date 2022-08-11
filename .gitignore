@@ -4,3 +4,4 @@ Cargo.lock
 src/wifi_creds.rs
 **/*.bk
 **/__pycache__/**
+build
