@@ -1,10 +1,10 @@
 mod wifi_creds;
 
-use core::fmt::Debug;
 use esp_idf_sys as _;
 
 /*
 
+use core::fmt::Debug;
 use embedded_svc::eth;
 use embedded_svc::eth::{Eth, TransitionalState};
 use embedded_svc::httpd::registry::*;
@@ -147,7 +147,7 @@ fn mch_hello_world(
 
     let reset = rst.into_output()?;
 
-    let mut display = ili9341::Ili9341::new(
+    let display = ili9341::Ili9341::new(
         di,
         reset,
         &mut delay::Ets,
@@ -155,7 +155,7 @@ fn mch_hello_world(
         ili9341::DisplaySize240x320,
     );
 
-    draw_text(
+    _ = draw_text(
         &mut display.unwrap(),
         &"".to_string(),
         &"Hello MCH2022 from Rust!".to_string(),

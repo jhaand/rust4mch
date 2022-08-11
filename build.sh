@@ -1,2 +1,2 @@
-cargo espflash save-image build/rust4mch.img  ESP32
+cargo espflash save-image ESP32 build/rust4mch.img  
 
