@@ -1,25 +1,9 @@
 mod wifi_creds;
 
 use core::fmt::Debug;
-/* 
-use std::fs;
-use std::io::{Read, Write};
-use std::net::{TcpListener, TcpStream};
-use std::path::PathBuf;
-use std::sync::{Condvar, Mutex};
-use std::{cell::RefCell, env, sync::atomic::*, sync::Arc, thread, time::*};
-*/
+use esp_idf_sys as _;
 
-// use embedded_svc::mqtt::client::utils::ConnState;
-// use url;
-use log::*;
-
-
-// use smol;
 /*
-use embedded_hal::adc::OneShot;
-use embedded_hal::blocking::delay::DelayMs;
-use embedded_hal::digital::v2::OutputPin;
 
 use embedded_svc::eth;
 use embedded_svc::eth::{Eth, TransitionalState};
@@ -46,19 +30,19 @@ use esp_idf_svc::sysloop::*;
 use esp_idf_svc::systime::EspSystemTime;
 use esp_idf_svc::timer::*;
 use esp_idf_svc::wifi::*;
-
-use esp_idf_hal::adc;
-use esp_idf_hal::delay;
 */ 
+
+//use esp_idf_hal::adc;
+use esp_idf_hal::delay;
 use esp_idf_hal::gpio;
-use esp_idf_hal::i2c;
+//use esp_idf_hal::i2c;
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::spi;
 
 // use esp_idf_sys::{self, c_types};
 // use esp_idf_sys::{esp, EspError};
-use esp_idf_sys as _;
 
+use embedded_hal::digital::v2::OutputPin;
 use display_interface_spi::SPIInterfaceNoCS;
 
 use embedded_graphics::prelude::*;
@@ -74,18 +58,13 @@ use embedded_text::{
 
 use ili9341;
 
-// use epd_waveshare::{epd4in2::*, graphics::VarDisplay, prelude::*};
 
 #[allow(dead_code)]
 const SSID: &str = wifi_creds::SSID;
 #[allow(dead_code)]
 const PASS: &str = wifi_creds::PASS;
 
-thread_local! {
-    static TLS: RefCell<u32> = RefCell::new(13);
-}
-
-fn main() -> Result<()> {
+fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
 
     test_print();
@@ -107,7 +86,6 @@ fn main() -> Result<()> {
         pins.gpio32,
     )?;
 
-    //test_tcp()?;
     Ok(())
 }
 
@@ -123,6 +101,7 @@ fn test_print() {
     println!("More complex print {:?}", children);
 }
 
+/*
 fn test_fs() -> Result<()> {
     assert_eq!(fs::canonicalize(PathBuf::from("."))?, PathBuf::from("/"));
     assert_eq!(
@@ -139,6 +118,7 @@ fn test_fs() -> Result<()> {
 
     Ok(())
 }
+*/
 
 fn mch_hello_world(
     dc: gpio::Gpio33<gpio::Unknown>,
@@ -147,7 +127,7 @@ fn mch_hello_world(
     sclk: gpio::Gpio18<gpio::Unknown>,
     sdo: gpio::Gpio23<gpio::Unknown>,
     cs: gpio::Gpio32<gpio::Unknown>,
-) -> Result<()> {
+) -> anyhow::Result<()> {
 
     let config = <spi::config::Config as Default>::default().baudrate((40).MHz().into());
 
@@ -173,11 +153,10 @@ fn mch_hello_world(
         &mut delay::Ets,
         KalugaOrientation::LandscapeVericallyFlipped,
         ili9341::DisplaySize240x320,
-    )
-    .map_err(|_| anyhow::anyhow!("Display"))?;
+    );
 
     draw_text(
-        &mut display,
+        &mut display.unwrap(),
         &"".to_string(),
         &"Hello MCH2022 from Rust!".to_string(),
     );
@@ -235,7 +214,7 @@ where
     )
     .draw(display)?;
 
-    info!("Displaying done");
+    println!("Displaying done");
 
     Ok(())
 }
