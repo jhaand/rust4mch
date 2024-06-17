@@ -30,7 +30,7 @@ use esp_idf_svc::sysloop::*;
 use esp_idf_svc::systime::EspSystemTime;
 use esp_idf_svc::timer::*;
 use esp_idf_svc::wifi::*;
-*/ 
+*/
 
 //use esp_idf_hal::adc;
 use esp_idf_hal::delay;
@@ -42,12 +42,12 @@ use esp_idf_hal::spi;
 // use esp_idf_sys::{self, c_types};
 // use esp_idf_sys::{esp, EspError};
 
-use embedded_hal::digital::v2::OutputPin;
 use display_interface_spi::SPIInterfaceNoCS;
+use embedded_hal::digital::v2::OutputPin;
 
-use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::{ascii::FONT_10X20, MonoTextStyle};
 use embedded_graphics::pixelcolor::*;
+use embedded_graphics::prelude::*;
 use embedded_graphics::primitives::*;
 use embedded_graphics::text::*;
 use embedded_text::{
@@ -57,7 +57,6 @@ use embedded_text::{
 };
 
 use ili9341;
-
 
 #[allow(dead_code)]
 const SSID: &str = wifi_creds::SSID;
@@ -85,7 +84,6 @@ fn main() -> anyhow::Result<()> {
         pins.gpio23,
         pins.gpio32,
     )?;
-
     Ok(())
 }
 
@@ -128,7 +126,6 @@ fn mch_hello_world(
     sdo: gpio::Gpio23<gpio::Unknown>,
     cs: gpio::Gpio32<gpio::Unknown>,
 ) -> anyhow::Result<()> {
-
     let config = <spi::config::Config as Default>::default().baudrate((40).MHz().into());
 
     let di = SPIInterfaceNoCS::new(
@@ -193,7 +190,7 @@ where
         Alignment::Left,
     )
     .draw(display)?;
-
+    
     Rectangle::new(Point::zero(), Size::new(300, 300)).into_styled(
         TextBoxStyleBuilder::new()
             //.height_mode(HeightMode::FitToText)
@@ -228,6 +225,7 @@ pub enum KalugaOrientation {
     LandscapeFlipped,
     LandscapeVericallyFlipped,
 }
+
 
 impl ili9341::Mode for KalugaOrientation {
     fn mode(&self) -> u8 {

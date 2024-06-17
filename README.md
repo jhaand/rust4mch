@@ -13,6 +13,7 @@ Install the Rust toolchain for ESP, see full [instructions here](https://github.
 2. Clone the repository or [download the installer](https://github.com/esp-rs/rust-build#download-installer)
    - If downloading the installer, make it executable: `chmod a+x install-rust-toolchain.sh`
 3. Run the following command:
+require("core")
    - Linux/MacOs:
         ```bash
         ./install-rust-toolchain.sh \
